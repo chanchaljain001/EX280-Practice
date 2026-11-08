@@ -263,7 +263,7 @@ button.action:hover{filter:brightness(.95)}
   </div>
   <div class="exam-title">EX280 — Red Hat Certified Specialist in OpenShift Administration</div>
   <div class="header-right">
-    <div class="timer" id="timer">02:00:00</div>
+    <div class="timer" id="timer">03:00:00</div>
     <button class="start-exam" id="startExam" type="button">▶ START EXAM</button>
     <button class="restart-exam" id="restartExam" type="button" style="display:none">↻ RESTART</button>
     <button class="exit" id="exitExam" type="button">Exit Exam</button>
@@ -277,7 +277,7 @@ button.action:hover{filter:brightness(.95)}
     <p class="subtitle">Exam Mode • Unofficial OpenShift administration practice simulator</p>
     <div class="start-grid">
       <div class="start-stat"><strong>16</strong><span>Questions</span></div>
-      <div class="start-stat"><strong>2:00:00</strong><span>Time Limit</span></div>
+      <div class="start-stat"><strong>3:00:00</strong><span>Time Limit</span></div>
       <div class="start-stat"><strong>Timed</strong><span>Exam Mode</span></div>
     </div>
     <div class="start-warning"><strong>Before you start:</strong> The timer begins only after you confirm START EXAM. During an active attempt the timer cannot be reset. Your attempt can be submitted or exited at any time.</div>
@@ -296,7 +296,7 @@ button.action:hover{filter:brightness(.95)}
       <div class="result-stat"><strong id="resultAttempt">#1</strong><span>Attempt</span></div>
       <div class="result-stat"><strong id="resultTime">00:00:00</strong><span>Time Used</span></div>
       <div class="result-stat"><strong id="resultCompleted">0 / 16</strong><span>Completed</span></div>
-      <div class="result-stat"><strong id="resultRemaining">02:00:00</strong><span>Time Remaining</span></div>
+      <div class="result-stat"><strong id="resultRemaining">03:00:00</strong><span>Time Remaining</span></div>
     </div>
     <div class="results-actions">
       <button class="start-primary" id="reviewAttempt" type="button">Review Attempt</button>
@@ -433,7 +433,7 @@ const questions = [
 {n:7,title:"Deploy an Application",body:`
 <p>Deploy the chart named <strong>redhat-movie</strong> in the project <strong>ascii-movie</strong> from the repository:</p>
 <div class="task">
-<div class="cmd">http://helm.domain20.example.com/chart//</div>
+<div class="cmd">https://redhat-cop.github.io/helm-charts</div>
 <p>You may use the <strong>telnet</strong> or <strong>nc</strong> commands to validate the deployment.</p>
 </div>`},
 {n:8,title:"Configure a Secret",body:`
@@ -475,7 +475,7 @@ const questions = [
 <ul>
 <li>The <strong>database</strong> project has a network policy with the name <strong>db-allow-sysql-conn</strong> based on pod selector label <strong>network.openshift.io/policy-group</strong>.</li>
 <li>Connections to the <strong>database</strong> project are restricted to deployments from the <strong>checker</strong> project.</li>
-<li>The network policy is filtered by project selector using the <strong>team: devsecops</strong> label and pod selector using the <strong>deployment: sysql</strong> label.</li>
+<li>The network policy is filtered by project selector using the <strong>team: devsecops</strong> label and pod selector using the <strong>deployment-sysql</strong> label.</li>
 <li>The application can establish a connection to port <strong>3306/TCP</strong>.</li>
 <li>You can check your work by examining the logs in the <strong>checker</strong> project.</li>
 </ul>
@@ -484,7 +484,7 @@ const questions = [
 <p>Configure your OpenShift cluster so that <strong>new projects are created with limits</strong> using the following requirements:</p>
 <div class="task">
 <p>The name of the limit range is: <strong>PROJECT_NAME-Limits</strong>, where <strong>PROJECT_NAME</strong> is the name of the project created using <strong>oc new-project</strong>.</p>
-<p>The amount of memory consumed by a single container is between <strong>128MB and 16MB</strong>.</p>
+<p>The amount of memory consumed by a single container is between <strong>128MB and 1Gi</strong>.</p>
 <p>The default memory limit is <strong>512MB</strong>.</p>
 <p>The default memory request is <strong>256MB</strong>.</p>
 </div>`},
@@ -498,7 +498,7 @@ const questions = [
 </ul>
 </div>`},
 {n:16,title:"Create a Cron Job",body:`
-<p>Create a cron job using the image <strong>registry.domain20.example.com/library/job-runner:latest</strong> with the following requirements:</p>
+<p>Create a cron job using the image <strong>docker.io/library/busybox:latest</strong> with the following requirements:</p>
 <div class="task">
 <ul>
 <li>The cron job name is <strong>job-runner</strong>.</li>
@@ -514,7 +514,7 @@ let current=0;
 const visited=new Set([0]);
 const attempts=[];
 let currentAttempt=null;
-const TIMER_START=7200;
+const TIMER_START=10800;
 let seconds=TIMER_START;
 let examStarted=false;
 let examFinished=false;
@@ -584,7 +584,7 @@ function render(){
 
 function startExam(){
   if(examStarted) return;
-  if(!confirm("Start the 2-hour EX280 practice exam now? The timer will begin and cannot be reset during this attempt.")) return;
+  if(!confirm("Start the 3-hour EX280 practice exam now? The timer will begin and cannot be reset during this attempt.")) return;
   beginFreshAttempt();
 }
 
@@ -592,7 +592,7 @@ function beginFreshAttempt(){
   current=0;
   visited.clear();
   visited.add(0);
-  seconds=7200;
+  seconds=TIMER_START;
   examStarted=true;
   examFinished=false;
   practiceMode=false;
@@ -622,7 +622,7 @@ function finishExam(status="Completed"){
   if(examFinished) return;
   examFinished=true;
   examStarted=false;
-  const used=7200-seconds;
+  const used=TIMER_START-seconds;
   if(currentAttempt){
     currentAttempt.timeUsed=used;
     currentAttempt.status=status;
@@ -665,7 +665,7 @@ function exitExam(){
 function showResults(index){
   const a=attempts[index];
   const used=a ? a.timeUsed : 0;
-  const remaining=Math.max(0,7200-used);
+  const remaining=Math.max(0,TIMER_START-used);
   document.getElementById("resultAttempt").textContent="#"+(index+1);
   document.getElementById("resultTime").textContent=formatTime(used);
   document.getElementById("resultCompleted").textContent=`${a?a.completed:0} / ${questions.length}`;
@@ -717,7 +717,7 @@ function reviewAttempt(index){
 document.getElementById("startExam").onclick=startExam;
 document.getElementById("startFromScreen").onclick=startExam;
 document.getElementById("practiceMode").onclick=enterPracticeMode;
-document.getElementById("restartExam").onclick=()=>{if(confirm("Start a fresh 2-hour practice attempt? The current attempt will remain in history."))beginFreshAttempt();};
+document.getElementById("restartExam").onclick=()=>{if(confirm("Start a fresh 3-hour practice attempt? The current attempt will remain in history."))beginFreshAttempt();};
 document.getElementById("exitExam").onclick=exitExam;
 document.getElementById("reviewAttempt").onclick=()=>reviewAttempt(attempts.length-1);
 document.getElementById("newAttempt").onclick=()=>{document.getElementById("resultsScreen").style.display="none";beginFreshAttempt();};
@@ -750,7 +750,7 @@ setInterval(()=>{
       updateTimer();
     }else{
       finishExam("Time expired");
-      alert("Time is up. Your 2-hour EX280 practice exam has finished.");
+      alert("Time is up. Your 3-hour EX280 practice exam has finished.");
     }
   }
 },1000);
